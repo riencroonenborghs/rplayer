@@ -50,7 +50,12 @@ class _DeviceDiscovererState extends State<DeviceDiscoverer> {
           Bookmark bookmark = Bookmark.fromService(service);
           db.saveBookmark(bookmark).then((result) {
             if(result) {
-              // Scaffold.of(buildContext).showSnackBar("Bookmark added.");
+              Scaffold.of(buildContext).showSnackBar(
+                new SnackBar(
+                  content: new Text("Bookmark added."),
+                  duration: new Duration(seconds: 3)
+                )
+              );
             }
           });          
         }

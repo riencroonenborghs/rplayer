@@ -7,9 +7,9 @@ abstract class BaseDeviceBrowseEvent extends Equatable {
 }
 
 class DeviceBrowseEvent extends BaseDeviceBrowseEvent {
-  final Service service;
+  final dynamic browseableObject;
 
-  DeviceBrowseEvent({@required this.service})
-      : assert(service != null),
-        super([service]);
+  DeviceBrowseEvent({@required this.browseableObject})
+      : assert(browseableObject != null),
+        super([browseableObject]);
 }

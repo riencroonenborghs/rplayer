@@ -4,6 +4,7 @@ import "package:flutter_bloc/flutter_bloc.dart";
 
 import "package:RPlayer/widgets/widgets.dart";
 import "package:RPlayer/blocs/blocs.dart";
+import "package:RPlayer/models/models.dart";
 
 class DeviceBrowser extends StatefulWidget {
   const DeviceBrowser();
@@ -12,16 +13,17 @@ class DeviceBrowser extends StatefulWidget {
   _DeviceBrowserState createState() => _DeviceBrowserState();
 }
 
-class _DeviceBrowserState extends State<DeviceBrowser> {  
+class _DeviceBrowserState extends State<DeviceBrowser> {
+  BuildContext buildContext;
   DeviceBrowseBloc deviceBrowseBloc;
-  upnp.Service service;
+  dynamic pageArgument;
+  List<DeviceContainer> deviceContainers;
 
-  @override
-  void initState() {
-    deviceBrowseBloc = DeviceBrowseBloc();
-  }
+  Widget _waiting() {
+    String label;
+    if(pageArgument is upnp.Service) { label = "Browsing ${pageArgument.device.friendlyName}..."; }
+    else { label = "Browsing ${pageArgument.title}..."; }
 
-  Widget _waiting(String label) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -38,40 +40,44 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
     );
   }
 
-  // Widget _listDevices() {
-  //   List<Widget> devices = new List<Widget>();
-  //   for(upnp.Service service in foundServices) {
-  //     ListTile deviceTile = ListTile(
-  //       title: Row(children: [Text(service.device.friendlyName)]),
-  //       subtitle: Row(children: [Text(service.device.modelDescription, style: TextStyle(fontSize: 10))]),
-  //       trailing: Icon(Icons.chevron_right),
-  //       onTap: () {
-  //         // deviceBrowseBloc.dispatch(DeviceBrowseEvent(service: service));
-  //       }
-  //     );
-  //     devices.add(deviceTile);
-  //   };
+  Widget _listContainers() {
+    List<Widget> containerWidgets = new List<Widget>();
+    for(DeviceContainer deviceContainer in deviceContainers) {
+      print(deviceContainer);
+      ListTile containerTile = ListTile(
+        title: Row(children: [Text(deviceContainer.title)]),
+        trailing: Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.pushNamed(
+            buildContext,
+            "/browser",
+            arguments: deviceContainer
+          );
+        }
+      );
+      containerWidgets.add(containerTile);
+    };
 
-  //   return Flexible(
-  //     child: Column(
-  //       children: devices
-  //     )
-  //   );
-  // }
+    return Flexible(
+      child: Column(
+        children: containerWidgets
+      )
+    );
+  }
 
   Widget _browsingDevices() {
     return BlocBuilder<DeviceBrowseEvent, DeviceBrowseState>(
       bloc: deviceBrowseBloc,
       builder: (_, DeviceBrowseState state) {
-        // discover
         if(state is DeviceBrowseInitialState) {
-          return _waiting("Browsing ${service.device.friendlyName}...");
+          return _waiting();
         }
         if(state is DeviceBrowseBusyState) {      
-          return _waiting("Browsing ${service.device.friendlyName}...");
+          return _waiting();
         }
         if(state is DeviceBrowsedState) {
-          return Text("DONE");
+          deviceContainers = state.deviceContainers;
+          return _listContainers();
         }
         if(state is DeviceBrowseErrorState) {      
           return Text("Error happened :(", style: TextStyle(color: Colors.red[700]));
@@ -82,7 +88,10 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
 
   @override
   Widget build(BuildContext context) {
-    service = ModalRoute.of(context).settings.arguments;
+    buildContext = context;
+    pageArgument = ModalRoute.of(context).settings.arguments;
+
+    deviceBrowseBloc = DeviceBrowseBloc(service: (pageArgument is upnp.Service) ? pageArgument : pageArgument.service);
 
     Container mainContainer = Container(
       child: Row(
@@ -91,7 +100,7 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
       )
     );
 
-    deviceBrowseBloc.dispatch(DeviceBrowseEvent(service: service));
+    deviceBrowseBloc.dispatch(DeviceBrowseEvent(browseableObject: pageArgument));
 
     return MainScaffold(
       title: "RPlayer",

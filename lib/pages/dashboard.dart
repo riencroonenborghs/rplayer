@@ -7,8 +7,8 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  int _selectedIndex = 0;
-  // static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  int _selectedIndex = 1;
+
   static const List<Widget> _widgetOptions = <Widget>[
     Text("Local"),
     DeviceDiscoverer(),
