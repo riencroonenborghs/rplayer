@@ -18,7 +18,13 @@ class DeviceContainer {
     this._service   = service;
     this._id        = elt.getAttribute("id");
     this._parentId  = elt.getAttribute("parentID");
-    this._title     = elt.findElements("dc:title").first.text;
+    this._title     = _text(elt, "dc:title");
+  }
+
+  String _text(XmlElement elt, String name) {
+    Iterable<XmlElement> elements = elt.findElements(name);
+    if(elements.length == 0) { return ""; }
+    return elements.first.text;
   }
 
   toString() {

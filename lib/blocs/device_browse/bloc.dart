@@ -5,6 +5,9 @@ import "package:bloc/bloc.dart";
 import "package:RPlayer/blocs/blocs.dart";
 import "package:RPlayer/models/models.dart";
 
+import 'dart:developer' as developer;
+
+
 class DeviceBrowseBloc extends Bloc<DeviceBrowseEvent, DeviceBrowseState> {
   Service service;
   DeviceBrowseBloc({@required this.service});
@@ -17,8 +20,10 @@ class DeviceBrowseBloc extends Bloc<DeviceBrowseEvent, DeviceBrowseState> {
     if (event is DeviceBrowseEvent) {
       yield DeviceBrowseBusyState();
       try {
-        List<DeviceContainer> deviceContainers = await _browse(event.browseableObject);
-        yield DeviceBrowsedState(deviceContainers: deviceContainers);
+        dynamic data = await _browse(event.browseableObject);
+        List<DeviceContainer> deviceContainers = data[0];
+        List<DeviceItem> deviceItems = data[1];
+        yield DeviceBrowsedState(deviceContainers: deviceContainers, deviceItems: deviceItems);
       } catch (e) {
         print(e);
         yield DeviceBrowseErrorState();
@@ -26,8 +31,9 @@ class DeviceBrowseBloc extends Bloc<DeviceBrowseEvent, DeviceBrowseState> {
     }
   }
 
-  Future<List<DeviceContainer>> _browse(dynamic browseableObject) async {
+  Future<List<dynamic>> _browse(dynamic browseableObject) async {
     List<DeviceContainer> deviceContainers = new List<DeviceContainer>();
+    List<DeviceItem> deviceItems = new List<DeviceItem>();
     Action action = service.actions.firstWhere((action) => action.name == "Browse");
 
     dynamic args = {
@@ -39,14 +45,23 @@ class DeviceBrowseBloc extends Bloc<DeviceBrowseEvent, DeviceBrowseState> {
       "SortCriteria": ""
     };
 
-    var data      = await action.invoke(args);
-    String result = data["Result"];
-    var document  = xml.parse(result);
+    var actionData          = await action.invoke(args);
+    String actionDataResult = actionData["Result"];
+    var document            = xml.parse(actionDataResult);
     document.findAllElements("container").forEach((xmlElt) {
       deviceContainers.add(
         DeviceContainer.fromXmlElement(service, xmlElt)
       );
     });
-    return deviceContainers;
+    document.findAllElements("item").forEach((xmlElt) {
+      deviceItems.add(
+        DeviceItem.fromXmlElement(service, xmlElt)
+      );
+    });
+
+    List<dynamic> resultData = new List<dynamic>();
+    resultData.add(deviceContainers);
+    resultData.add(deviceItems);
+    return resultData;
   }
 }

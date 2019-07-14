@@ -12,8 +12,10 @@ class DeviceBrowseInitialState extends DeviceBrowseState {}
 class DeviceBrowseBusyState extends DeviceBrowseState {}
 class DeviceBrowsedState extends DeviceBrowseState {
   final List<DeviceContainer> deviceContainers;
+  final List<DeviceItem> deviceItems;
 
-  DeviceBrowsedState({@required this.deviceContainers})
+  DeviceBrowsedState({@required this.deviceContainers, @required this.deviceItems})
       : assert(deviceContainers != null),
-        super([deviceContainers]);
+        assert(deviceItems != null),
+        super([deviceContainers, deviceItems]);
 }

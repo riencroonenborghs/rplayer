@@ -18,6 +18,7 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
   DeviceBrowseBloc deviceBrowseBloc;
   dynamic pageArgument;
   List<DeviceContainer> deviceContainers;
+  List<DeviceItem> deviceItems;
 
   Widget _waiting() {
     String label;
@@ -40,12 +41,27 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
     );
   }
 
-  Widget _listContainers() {
+  Widget _listText(String text) {
+    return Row(
+      children: [
+        Flexible(
+          child: Text(
+            text,
+            overflow: TextOverflow.ellipsis
+          )
+        )
+      ]
+    );
+  }
+
+
+  Widget _listContainersOrItems() {
     List<Widget> containerWidgets = new List<Widget>();
+
+    // containers
     for(DeviceContainer deviceContainer in deviceContainers) {
-      print(deviceContainer);
       ListTile containerTile = ListTile(
-        title: Row(children: [Text(deviceContainer.title)]),
+        title: _listText(deviceContainer.title),
         trailing: Icon(Icons.chevron_right),
         onTap: () {
           Navigator.pushNamed(
@@ -56,6 +72,27 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
         }
       );
       containerWidgets.add(containerTile);
+    };
+
+    // items
+    for(DeviceItem deviceItem in deviceItems) {
+      ListTile itemTile = ListTile(
+        leading: deviceItem.poster != null ? Image.network(deviceItem.poster) : Container(),
+        title: _listText(deviceItem.title),
+        subtitle: Row(children: [
+          Icon(Icons.star_border),
+          Text(deviceItem.rating)
+        ]),
+        trailing: Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.pushNamed(
+            buildContext,
+            "/playable-item",
+            arguments: deviceItem
+          );
+        }
+      );
+      containerWidgets.add(itemTile);
     };
 
     return Flexible(
@@ -77,7 +114,8 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
         }
         if(state is DeviceBrowsedState) {
           deviceContainers = state.deviceContainers;
-          return _listContainers();
+          deviceItems = state.deviceItems;
+          return _listContainersOrItems();
         }
         if(state is DeviceBrowseErrorState) {      
           return Text("Error happened :(", style: TextStyle(color: Colors.red[700]));
