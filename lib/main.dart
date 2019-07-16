@@ -12,7 +12,7 @@ class App extends StatelessWidget {
       title: "RPlayer",
       routes: routes,
       theme: ThemeData(primarySwatch: Colors.green),
-      home: Dashboard()
+      home: MyApp()
     );
   }
 }

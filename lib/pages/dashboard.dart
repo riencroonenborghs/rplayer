@@ -10,9 +10,9 @@ class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 1;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Text("Local"),
-    DeviceDiscoverer(),
-    Bookmarks()
+    // Text("Local"),
+    // DeviceDiscoverer(),
+    // Bookmarks()
   ];
 
   void _onItemTapped(int index) {

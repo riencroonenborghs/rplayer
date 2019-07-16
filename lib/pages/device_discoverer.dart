@@ -8,7 +8,9 @@ import "package:RPlayer/models/models.dart";
 import "package:RPlayer/utils/utils.dart";
 
 class DeviceDiscoverer extends StatefulWidget {
-  const DeviceDiscoverer();
+  // const DeviceDiscoverer();
+  final ValueChanged<upnp.Service> onPush;
+  DeviceDiscoverer({Key key, @required this.onPush}) : super(key: key);
 
   @override
   _DeviceDiscovererState createState() => _DeviceDiscovererState();
@@ -77,11 +79,12 @@ class _DeviceDiscovererState extends State<DeviceDiscoverer> {
         subtitle: Row(children: [Text(service.device.modelDescription, style: TextStyle(fontSize: 10))]),
         trailing: _popUpMenu(service),
         onTap: () {
-          Navigator.pushNamed(
-            buildContext,
-            "/browser",
-            arguments: service
-          );
+          widget.onPush(service);
+          // Navigator.pushNamed(
+          //   buildContext,
+          //   "/browser",
+          //   arguments: service
+          // );
         }
       );
       devices.add(deviceTile);

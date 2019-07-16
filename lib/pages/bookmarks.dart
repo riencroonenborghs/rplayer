@@ -8,7 +8,8 @@ import "package:RPlayer/models/models.dart";
 import "package:RPlayer/utils/utils.dart";
 
 class Bookmarks extends StatefulWidget {
-  const Bookmarks();
+  final VoidCallback onPush;
+  Bookmarks({Key key, @required this.onPush}) : super(key: key);
 
   @override
   _BookmarksState createState() => _BookmarksState();
@@ -48,6 +49,7 @@ class _BookmarksState extends State<Bookmarks> {
         title: Row(children: [Text(bookmark.name)]),
         trailing: Icon(Icons.chevron_right),
         onTap: () {
+          widget.onPush();
           // Navigator.pushNamed(
           //   buildContext,
           //   "/browser",

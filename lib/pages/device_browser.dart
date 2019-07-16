@@ -7,7 +7,9 @@ import "package:RPlayer/blocs/blocs.dart";
 import "package:RPlayer/models/models.dart";
 
 class DeviceBrowser extends StatefulWidget {
-  const DeviceBrowser();
+  final ValueChanged<dynamic> onPush;
+  final dynamic source;
+  DeviceBrowser({Key key, @required this.onPush, @required this.source}) : super(key: key);
   
   @override
   _DeviceBrowserState createState() => _DeviceBrowserState();
@@ -16,14 +18,13 @@ class DeviceBrowser extends StatefulWidget {
 class _DeviceBrowserState extends State<DeviceBrowser> {
   BuildContext buildContext;
   DeviceBrowseBloc deviceBrowseBloc;
-  dynamic pageArgument;
   List<DeviceContainer> deviceContainers;
   List<DeviceItem> deviceItems;
 
   Widget _waiting() {
     String label;
-    if(pageArgument is upnp.Service) { label = "Browsing ${pageArgument.device.friendlyName}..."; }
-    else { label = "Browsing ${pageArgument.title}..."; }
+    if(widget.source is upnp.Service) { label = "Browsing ${widget.source.device.friendlyName}..."; }
+    else { label = "Browsing ${widget.source.title}..."; }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -64,11 +65,12 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
         title: _listText(deviceContainer.title),
         trailing: Icon(Icons.chevron_right),
         onTap: () {
-          Navigator.pushNamed(
-            buildContext,
-            "/browser",
-            arguments: deviceContainer
-          );
+          widget.onPush(deviceContainer);
+          // Navigator.pushNamed(
+          //   buildContext,
+          //   "/browser",
+          //   arguments: deviceContainer
+          // );
         }
       );
       containerWidgets.add(containerTile);
@@ -127,9 +129,8 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
   @override
   Widget build(BuildContext context) {
     buildContext = context;
-    pageArgument = ModalRoute.of(context).settings.arguments;
 
-    deviceBrowseBloc = DeviceBrowseBloc(service: (pageArgument is upnp.Service) ? pageArgument : pageArgument.service);
+    deviceBrowseBloc = DeviceBrowseBloc(service: (widget.source is upnp.Service) ? widget.source : widget.source.service);
 
     Container mainContainer = Container(
       child: Row(
@@ -138,7 +139,7 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
       )
     );
 
-    deviceBrowseBloc.dispatch(DeviceBrowseEvent(browseableObject: pageArgument));
+    deviceBrowseBloc.dispatch(DeviceBrowseEvent(browseableObject: widget.source));
 
     return MainScaffold(
       title: "RPlayer",
