@@ -7,7 +7,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  TabItem currentTab = TabItem.bookmarks;
+  TabItem currentTab = TabItem.deviceDiscoverer;
   Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
     TabItem.local: GlobalKey<NavigatorState>(),
     TabItem.deviceDiscoverer: GlobalKey<NavigatorState>(),
@@ -40,12 +40,28 @@ class MyAppState extends State<MyApp> {
   }
 
   Widget _buildOffstageNavigator(TabItem tabItem) {
+    Widget child;
+    if(tabItem == TabItem.deviceDiscoverer) {
+      child = DeviceDiscovererTabNavigator(
+        navigatorKey: navigatorKeys[tabItem],
+        tabItem: tabItem
+      );
+    }
+    if(tabItem == TabItem.local) {
+      child = LocalTabNavigator(
+        navigatorKey: navigatorKeys[tabItem],
+        tabItem: tabItem
+      );
+    }
+    if(tabItem == TabItem.bookmarks) {
+      child = BookmarksTabNavigator(
+        navigatorKey: navigatorKeys[tabItem],
+        tabItem: tabItem
+      );
+    }
     return Offstage(
       offstage: currentTab != tabItem,
-      child: TabNavigator(
-        navigatorKey: navigatorKeys[tabItem],
-        tabItem: tabItem,
-      ),
+      child: child
     );
   }
 }

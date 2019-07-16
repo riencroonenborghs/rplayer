@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import "package:upnp/upnp.dart" as upnp;
 import "package:RPlayer/pages/pages.dart";
 
-class TabNavigatorRoutes {
+class DeviceDiscovererTabNavigatorRoutes {
   static const String root = '/';
   static const String local = '/local';
   static const String deviceDiscoverer = '/discoverer';
@@ -10,20 +10,20 @@ class TabNavigatorRoutes {
   static const String bookmarks = '/bookmarks';
 }
 
-class TabNavigator extends StatelessWidget {
-  TabNavigator({this.navigatorKey, this.tabItem});
+class DeviceDiscovererTabNavigator extends StatelessWidget {
+  DeviceDiscovererTabNavigator({this.navigatorKey, this.tabItem});
   final GlobalKey<NavigatorState> navigatorKey;
   final TabItem tabItem;
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
-      TabNavigatorRoutes.root: (context) => Bookmarks(
-        onPush: () => {}
-      ),
-      TabNavigatorRoutes.bookmarks: (context) => Bookmarks(
-        onPush: () => {}
-      ),
-      TabNavigatorRoutes.deviceDiscoverer: (context) => DeviceDiscoverer(
+      // DeviceDiscovererTabNavigatorRoutes.root: (context) => Bookmarks(
+      //   onPush: () => {}
+      // ),
+      // DeviceDiscovererTabNavigatorRoutes.bookmarks: (context) => Bookmarks(
+      //   onPush: () => {}
+      // ),
+      DeviceDiscovererTabNavigatorRoutes.root: (context) => DeviceDiscoverer(
         onPush: (service) {
           Navigator.pushNamed(
             context,
@@ -32,7 +32,7 @@ class TabNavigator extends StatelessWidget {
           );
         }
       ),
-      TabNavigatorRoutes.deviceBrowser: (context) => DeviceBrowser(
+      DeviceDiscovererTabNavigatorRoutes.deviceBrowser: (context) => DeviceBrowser(
         source: routeArguments,
         onPush: (deviceContainer) {
           Navigator.pushNamed(
@@ -42,7 +42,7 @@ class TabNavigator extends StatelessWidget {
           );
         }
       ),
-      TabNavigatorRoutes.local: (context) => Text("local")
+      // DeviceDiscovererTabNavigatorRoutes.local: (context) => Text("local")
     };
   }
 
@@ -50,10 +50,9 @@ class TabNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var routeBuilders = _routeBuilders(context);
-
     return Navigator(
       key: navigatorKey,
-      initialRoute: TabNavigatorRoutes.deviceDiscoverer,
+      initialRoute: DeviceDiscovererTabNavigatorRoutes.root,
       onGenerateRoute: (routeSettings) {
         routeArguments = routeSettings.arguments;
         // print("onGenerateRoute routeSettings arguments: ${routeSettings.arguments}");
