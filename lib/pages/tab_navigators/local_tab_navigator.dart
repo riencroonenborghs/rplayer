@@ -19,7 +19,6 @@ class LocalTabNavigator extends StatelessWidget {
     };
   }
 
-  dynamic routeArguments;
   @override
   Widget build(BuildContext context) {
     var routeBuilders = _routeBuilders(context);
@@ -27,8 +26,6 @@ class LocalTabNavigator extends StatelessWidget {
       key: navigatorKey,
       initialRoute: LocalTabNavigatorRoutes.root,
       onGenerateRoute: (routeSettings) {
-        routeArguments = routeSettings.arguments;
-        // print("onGenerateRoute routeSettings arguments: ${routeSettings.arguments}");
         // print("onGenerateRoute routeSettings name: ${routeSettings.name}");
         return MaterialPageRoute(
           builder: (context) => routeBuilders[routeSettings.name](context),

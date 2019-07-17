@@ -7,7 +7,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  TabItem currentTab = TabItem.deviceDiscoverer;
+  TabItem currentTab = TabItem.bookmarks;
   Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
     TabItem.local: GlobalKey<NavigatorState>(),
     TabItem.deviceDiscoverer: GlobalKey<NavigatorState>(),

@@ -62,15 +62,14 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
     // containers
     for(DeviceContainer deviceContainer in deviceContainers) {
       ListTile containerTile = ListTile(
+        leading: Container(
+          width: 48,
+          child: deviceContainer.poster == null ? Icon(Icons.folder) : Image.network(deviceContainer.poster)
+        ),
         title: _listText(deviceContainer.title),
         trailing: Icon(Icons.chevron_right),
         onTap: () {
           widget.onPush(deviceContainer);
-          // Navigator.pushNamed(
-          //   buildContext,
-          //   "/browser",
-          //   arguments: deviceContainer
-          // );
         }
       );
       containerWidgets.add(containerTile);
@@ -79,7 +78,10 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
     // items
     for(DeviceItem deviceItem in deviceItems) {
       ListTile itemTile = ListTile(
-        leading: deviceItem.poster != null ? Image.network(deviceItem.poster) : Container(),
+        leading: Container(
+          width: 48,
+          child: deviceItem.poster == null ? Icon(Icons.movie) : Image.network(deviceItem.poster)
+        ),
         title: _listText(deviceItem.title),
         subtitle: Row(children: [
           Icon(Icons.star_border),
@@ -130,7 +132,11 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
   Widget build(BuildContext context) {
     buildContext = context;
 
-    deviceBrowseBloc = DeviceBrowseBloc(service: (widget.source is upnp.Service) ? widget.source : widget.source.service);
+    // deviceBrowseBloc = DeviceBrowseBloc(service: (widget.source is upnp.Service) ? widget.source : widget.source.service);
+    if(deviceBrowseBloc == null) { 
+      deviceBrowseBloc = DeviceBrowseBloc(service: (widget.source is upnp.Service) ? widget.source : widget.source.service);
+      deviceBrowseBloc.dispatch(DeviceBrowseEvent(browseableObject: widget.source));
+    }
 
     Container mainContainer = Container(
       child: Row(
@@ -139,7 +145,7 @@ class _DeviceBrowserState extends State<DeviceBrowser> {
       )
     );
 
-    deviceBrowseBloc.dispatch(DeviceBrowseEvent(browseableObject: widget.source));
+    
 
     return MainScaffold(
       title: "RPlayer",

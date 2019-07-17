@@ -40,14 +40,14 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     // When creating the db, create the table
     await db.execute(
-        "CREATE TABLE Bookmarks(id INTEGER PRIMARY KEY, name TEXT, network INTEGER, location TEXT, icon TEXT);");
+        "CREATE TABLE Bookmarks(id INTEGER PRIMARY KEY, name TEXT, description TEXT, url TEXT, xml TEXT);");
     // print("Created tables");
   }
 
   Future<bool> saveBookmark(Bookmark bookmark) async {
     var dbClient = await db;
     int result = await dbClient.insert("Bookmarks", bookmark.toMap());
-    return result == 1;
+    return result != 0;
   }
 
   Future<bool> removeBookmark(Bookmark bookmark) async {

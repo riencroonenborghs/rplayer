@@ -49,7 +49,7 @@ class _DeviceDiscovererState extends State<DeviceDiscoverer> {
       onSelected: (String type) { 
         if(type == "bookmark") {
           DatabaseHelper db = new DatabaseHelper();
-          Bookmark bookmark = Bookmark.fromService(service);
+          Bookmark bookmark = Bookmark.fromDevice(service.device);
           db.saveBookmark(bookmark).then((result) {
             if(result) {
               Scaffold.of(buildContext).showSnackBar(
@@ -75,16 +75,12 @@ class _DeviceDiscovererState extends State<DeviceDiscoverer> {
     List<Widget> devices = new List<Widget>();
     for(upnp.Service service in foundServices) {
       ListTile deviceTile = ListTile(
+        leading: Icon(Icons.wifi),
         title: Row(children: [Text(service.device.friendlyName)]),
         subtitle: Row(children: [Text(service.device.modelDescription, style: TextStyle(fontSize: 10))]),
         trailing: _popUpMenu(service),
         onTap: () {
           widget.onPush(service);
-          // Navigator.pushNamed(
-          //   buildContext,
-          //   "/browser",
-          //   arguments: service
-          // );
         }
       );
       devices.add(deviceTile);

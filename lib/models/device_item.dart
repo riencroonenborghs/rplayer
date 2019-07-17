@@ -53,7 +53,7 @@ class DeviceItem {
   }
 
   toString() {
-    return "${id} ${title} ${director} ${albumArtURI} ${description}";
+    return "item: ${id} - ${title}";
   }
 
   // Map<String, dynamic> toMap() {

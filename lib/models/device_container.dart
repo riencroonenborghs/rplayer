@@ -8,17 +8,23 @@ class DeviceContainer {
   String _id;
   String _parentId;
   String _title;
+  String _rating;
+  String _poster;
   
   upnp.Service get service => _service;
   String get id => _id;
   String get parentId => _parentId;
   String get title => _title;
+  String get rating => _rating;
+  String get poster => _poster;
 
   DeviceContainer.fromXmlElement(upnp.Service service, XmlElement elt) {
     this._service   = service;
     this._id        = elt.getAttribute("id");
     this._parentId  = elt.getAttribute("parentID");
     this._title     = _text(elt, "dc:title");
+    this._rating      = _text(elt, "xbmc:rating");
+    this._poster    = _getPoster(elt);
   }
 
   String _text(XmlElement elt, String name) {
@@ -27,17 +33,13 @@ class DeviceContainer {
     return elements.first.text;
   }
 
-  toString() {
-    return "${id} ${title}";
+  String _getPoster(XmlElement elt) {
+    Iterable<XmlElement> posters = elt.findElements("upnp:albumArtURI").where((artWork) { return artWork.getAttribute("dlna:profileID") == "JPEG_TN"; });
+    if(posters.length == 0) { return null; }
+    return posters.first.text;
   }
 
-  // Map<String, dynamic> toMap() {
-  //   var map = new Map<String, dynamic>();
-  //   map["id"]       = _id;
-  //   map["name"]     = _name;
-  //   map["network"]  = _network;
-  //   map["location"] = _location;
-  //   map["icon"]     = _icon;
-  //   return map;
-  // }
+  toString() {
+    return "container: ${id} - ${title}";
+  }
 }

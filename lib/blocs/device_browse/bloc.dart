@@ -34,7 +34,7 @@ class DeviceBrowseBloc extends Bloc<DeviceBrowseEvent, DeviceBrowseState> {
   Future<List<dynamic>> _browse(dynamic browseableObject) async {
     List<DeviceContainer> deviceContainers = new List<DeviceContainer>();
     List<DeviceItem> deviceItems = new List<DeviceItem>();
-    Action action = service.actions.firstWhere((action) => action.name == "Browse");
+    Action browseAction = service.actions.firstWhere((action) => action.name == "Browse");
 
     dynamic args = {
       "ObjectID": (browseableObject is Service) ? 0 : browseableObject.id,
@@ -45,7 +45,7 @@ class DeviceBrowseBloc extends Bloc<DeviceBrowseEvent, DeviceBrowseState> {
       "SortCriteria": ""
     };
 
-    var actionData          = await action.invoke(args);
+    var actionData          = await browseAction.invoke(args);
     String actionDataResult = actionData["Result"];
     var document            = xml.parse(actionDataResult);
     document.findAllElements("container").forEach((xmlElt) {

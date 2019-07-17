@@ -14,15 +14,10 @@ class DeviceDiscovererTabNavigator extends StatelessWidget {
   DeviceDiscovererTabNavigator({this.navigatorKey, this.tabItem});
   final GlobalKey<NavigatorState> navigatorKey;
   final TabItem tabItem;
+  dynamic routeArguments;
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
-      // DeviceDiscovererTabNavigatorRoutes.root: (context) => Bookmarks(
-      //   onPush: () => {}
-      // ),
-      // DeviceDiscovererTabNavigatorRoutes.bookmarks: (context) => Bookmarks(
-      //   onPush: () => {}
-      // ),
       DeviceDiscovererTabNavigatorRoutes.root: (context) => DeviceDiscoverer(
         onPush: (service) {
           Navigator.pushNamed(
@@ -41,12 +36,10 @@ class DeviceDiscovererTabNavigator extends StatelessWidget {
             arguments: deviceContainer
           );
         }
-      ),
-      // DeviceDiscovererTabNavigatorRoutes.local: (context) => Text("local")
+      )
     };
   }
-
-  dynamic routeArguments;
+  
   @override
   Widget build(BuildContext context) {
     var routeBuilders = _routeBuilders(context);

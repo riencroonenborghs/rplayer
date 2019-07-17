@@ -12,6 +12,11 @@ class DeviceDiscoverBloc extends Bloc<DeviceDiscoverEvent, DeviceDiscoverState> 
   @override
   DeviceDiscoverState get initialState => DeviceDiscoverInitialState();
 
+  Future<Service> getService(Device device) async {
+    Service service = await device.getService(ContentDirectory);
+    return service;
+  }
+
   @override
   Stream<DeviceDiscoverState> mapEventToState(DeviceDiscoverEvent event) async* {
     if (event is DeviceDiscoverEvent) {

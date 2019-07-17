@@ -8,8 +8,9 @@ import "package:RPlayer/models/models.dart";
 import "package:RPlayer/utils/utils.dart";
 
 class Bookmarks extends StatefulWidget {
-  final VoidCallback onPush;
-  Bookmarks({Key key, @required this.onPush}) : super(key: key);
+  final ValueChanged<upnp.Service> onBookmarkPush;
+  final VoidCallback onBookmarkRemoved;
+  Bookmarks({Key key, @required this.onBookmarkPush, @required this.onBookmarkRemoved}) : super(key: key);
 
   @override
   _BookmarksState createState() => _BookmarksState();
@@ -42,19 +43,48 @@ class _BookmarksState extends State<Bookmarks> {
     );
   }
 
+  Widget _popUpMenu(Bookmark bookmark) {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.more_vert),
+      onSelected: (String type) { 
+        if(type == "bookmark") {
+          DatabaseHelper db = new DatabaseHelper();
+          db.removeBookmark(bookmark).then((result) {
+            if(result) {
+              Scaffold.of(buildContext).showSnackBar(
+                new SnackBar(
+                  content: new Text("Bookmark removed."),
+                  duration: new Duration(seconds: 3)
+                )
+              );
+              bookmarksBloc.dispatch(GetBookmarksEvent());
+            }
+          });          
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(
+          value: "bookmark",
+          child: Text("Remove bookmark"),
+        )
+      ],
+    );
+  }
+
   Widget _listBookmarks() {
     List<Widget> bookmarksWidgets = new List<Widget>();
     for(Bookmark bookmark in bookmarks) {
       ListTile bookmarkTile = ListTile(
+        leading: Icon(Icons.bookmark_border),
         title: Row(children: [Text(bookmark.name)]),
-        trailing: Icon(Icons.chevron_right),
+        subtitle: Row(children: [Text(bookmark.description, style: TextStyle(fontSize: 10))]),
+        trailing: _popUpMenu(bookmark),
         onTap: () {
-          widget.onPush();
-          // Navigator.pushNamed(
-          //   buildContext,
-          //   "/browser",
-          //   arguments: service
-          // );
+          upnp.Device device = bookmark.toDevice();
+          DeviceDiscoverBloc deviceDiscoverBloc = new DeviceDiscoverBloc();
+          deviceDiscoverBloc.getService(device).then((upnp.Service service) {
+            widget.onBookmarkPush(service);
+          });
         }
       );
       bookmarksWidgets.add(bookmarkTile);
@@ -99,9 +129,9 @@ class _BookmarksState extends State<Bookmarks> {
       )
     );
 
-    if(bookmarks == null) {
+    // if(bookmarks == null) {
       bookmarksBloc.dispatch(GetBookmarksEvent()); 
-    }
+    // }
 
     return MainScaffold(
       title: "RPlayer",

@@ -4,22 +4,45 @@ import "package:RPlayer/pages/pages.dart";
 
 class BookmarksTabNavigatorRoutes {
   static const String root = '/';
+  static const String deviceBrowser = '/browser';
 }
 
 class BookmarksTabNavigator extends StatelessWidget {
   BookmarksTabNavigator({this.navigatorKey, this.tabItem});
   final GlobalKey<NavigatorState> navigatorKey;
   final TabItem tabItem;
+  dynamic routeArguments;
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
       BookmarksTabNavigatorRoutes.root: (context) => Bookmarks(
-        onPush: () => {}
-      ) 
+        onBookmarkPush: (service) {
+          Navigator.pushNamed(
+            context,
+            "/browser",
+            arguments: service
+          );
+        },
+        onBookmarkRemoved: () {
+          Navigator.pushNamed(
+            context,
+            "/"
+          );
+        }
+      ),
+      DeviceDiscovererTabNavigatorRoutes.deviceBrowser: (context) => DeviceBrowser(
+        source: routeArguments,
+        onPush: (deviceContainer) {
+          Navigator.pushNamed(
+            context,
+            "/browser",
+            arguments: deviceContainer
+          );
+        }
+      )
     };
   }
 
-  dynamic routeArguments;
   @override
   Widget build(BuildContext context) {
     var routeBuilders = _routeBuilders(context);
@@ -28,7 +51,6 @@ class BookmarksTabNavigator extends StatelessWidget {
       initialRoute: BookmarksTabNavigatorRoutes.root,
       onGenerateRoute: (routeSettings) {
         routeArguments = routeSettings.arguments;
-        // print("onGenerateRoute routeSettings arguments: ${routeSettings.arguments}");
         // print("onGenerateRoute routeSettings name: ${routeSettings.name}");
         return MaterialPageRoute(
           builder: (context) => routeBuilders[routeSettings.name](context),
